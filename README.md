@@ -88,3 +88,4 @@ IoT 개발자과정 IoT네트워크 프로그래밍 리포지토리
             }
 ```
 
+[!실행결과](https://raw.githubusercontent.com/been2525/basic-IoTNetwork-2024/main/image/example001.png)

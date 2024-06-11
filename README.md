@@ -62,6 +62,9 @@ IoT 개발자과정 IoT네트워크 프로그래밍 리포지토리
 - 구조체 sockaddr_in의 멤버
     - 멤버 sin_family
         - 주소체계 정보저장
+        - AF_INET - IPv4 인터넷 프로토콜에 적용하는 주소체계
+        - AF_INET6 - IPv6 인터넷 프로토콜에 적용하는 주소체계
+        - AF_LOCAL - 로컬 통신을 위한 유닉스 프로토컬의 주소체계
     - 멤버 sin_port
         - 16비트 PORT번호 저장
         - 네트워크 바이트 순서로 저장
@@ -74,7 +77,7 @@ IoT 개발자과정 IoT네트워크 프로그래밍 리포지토리
         - 반드시 0으로 채워야 한다.
 
 ``` C
-    serv_addr.sin_famliy=AF_INET;
+    serv_addr.sin_famliy=AF_INET; // IPv4 인터넷 프로토콜을 적용하겠다는 의미
     serv_addr.sin_addr.s_addr=htonl(INADDR_ANY);
     serv_addr.sin_port=htons(atoi(argv[1]));
 ```
@@ -89,3 +92,17 @@ IoT 개발자과정 IoT네트워크 프로그래밍 리포지토리
 ```
 - 실행결과
         <img src="https://raw.githubusercontent.com/been2525/basic-IoTNetwork-2024/main/image/example001.png" width="730">
+
+- CPU가 데이터를 메모리에 저장하는 방식
+    - 빅 엔디안 - 상위 바이트의 값을 작은 번지수에 저장하는 방식 - 하위 바이트값을 큰 번지수에 저장
+    - 리틀 엔디안 - 상위 바이트의 값을 큰 번지수에 저장하는 방식 - 하위 바이트값을 작은 번지수에 저장
+
+- 바이트 순서의 변환
+    - unsigned short htons(unsigned short);
+    - unsigned short ntohs(unsigned short);
+    - unsigned long htonl(unsigned long);
+    - unsigned long ntohl(unsigned long);
+        - htons에서 h는 호스트 바이트 순서를 의미
+        - htons에서 n은 네트워크 바이트 순서를 의미
+        - htons에서 s는 자료형 short를 의미
+        - htonl에서 l은 자료형 long을 의미

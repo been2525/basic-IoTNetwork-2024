@@ -87,5 +87,5 @@ IoT 개발자과정 IoT네트워크 프로그래밍 리포지토리
                     printf("전달인자: %s\n", argv[i]);
             }
 ```
-
-[!실행결과](https://raw.githubusercontent.com/been2525/basic-IoTNetwork-2024/main/image/example001.png)
+- 실행결과
+        <img src="https://raw.githubusercontent.com/been2525/basic-IoTNetwork-2024/main/image/example001.png" width="730">

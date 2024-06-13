@@ -172,3 +172,90 @@ int connect(int sock, const struct sockaddr * servaddr, socklen_t addrlen);
 - UDP의 데이터 송수신
     - TCP는 1대1의 연결을 필요로 하지만, UDP는 연결의 개념이 존재하지 않는다.
     - 서버 소켓과 클리이언트 소켓의 구분이 없다.
+
+## 3일차
+- connected UDP 소켓
+    - unconnected UDP 소켓의 sendto함수 호출과정
+        1. UDP 소켓에 목적지의 IP와 PORT번호 등록
+        2. 데이터 전송
+        3. UDP소켓에 등록된 목적지 정보 삭제
+    - connected UDP 소켓의 경우 1단계와 3단계의 과정을 매회 거치지 않는다.
+    - connceted UDP 소켓은 TCP와 같이 상대 소켓과의 연결을 의미하지 않는다.
+    - 그러나 소켓에 목적지에 대한 정보는 등록이 된다.
+
+- TCP 기반의 Half-close
+    - close 및 closesocket 함수의 기능
+        - 소켓의 완전 소멸을 의미한다.
+        - 소켓이 소멸되므로 더 이상의 입출력은 불가능하다.
+        - 상대방의 상태에 상관없이 일방적은 종료의 형태를 띤다.
+        - 때문에 상대 호스트의 데이터 송수신이 아직 완료되지 않은 상황이라면, 문제가 발생할 수 있다.
+    - Half-close
+        - 종료를 원한다는 것은, 더 이상 전송할 데이터가 존재x
+        - 따라서 출력 스트림은 종료를 시켜도된다.
+        - 다만 상대방도 종료를 원하는지 확인되지 않은 상황이므로, 출력스트림은 종료시키지 않을 필요가 있다.
+        - 때문에 일반적으로 Half-close라 하면 입력스트림만 종료하는 것을 의미한다.
+    - Shut-down 함수
+        - SHUT_RD - 입력 스트림 종료
+        - SHUT_WR - 출력 스트림 종료
+        - SHUT_RDWR - 입출력 스트림 종료
+
+- Domain name system
+    - 도메인 이름
+        - IP를 대신하는 서버의 주소
+        - 실제 접속에 사용되는 주소는 아니다. 이 정보는 IP로 변환이 되어야 접속이 가능하다.
+    - DNS 서버
+        - 도메인 이름을 IP로 변환해주는 서버
+        - DNS는 일종의 분산 데이터베이스 시스템이다.
+    - h_name - 공식 도메인 이름
+    - h_aliases - 별칭의 도메인 이름
+    - h_addrtype - 반환된 IP의 정보가 IPv4인 경우, AF_INET이 반환
+    - h_length - 반환된 IP정보의 크기, IPv4의 경우 4, IPv6의 경우 16이 저장
+    - h_addr_list - IP의 주소정보, 둘 이상의 경우 모두 반환
+
+- IP주소를 이용해서 도메인 정보 얻어오기
+```c
+#include <netdb.h>
+
+struct hostent * gethostbyaddr(const char * addr, socklen_t len, int family);
+```
+
+- 옵션정보의 참조에 사용되는 함수
+```c
+#include <sys/socket.h>
+
+int getsockopt(int sock, int level, int optname, void *optval, socklen_t *optlen);
+```
+- 옵션정보의 설정에 사용되는 함수
+```c
+#include <sys/socket.h>
+
+int setsockopt(int sock,. int level, int optname, const void *optval, socklen_t optlen);
+```
+- 입력버퍼의 크기를 참조 및 변경할 때에는 SO_SNDBUF
+- 출력버퍼의 크기를 참조 및 변경할 때에는 SO_RCVBUF
+
+- time-wait
+    - time-wait의 이해
+        - 서버, 클라이언트에 상관없이 TCP 소켓에서 연결의 종료를 목적으로 Four-way handshaking의 첫 번째 메시지를 젂달하는 호스트의 소켓은 Time-wait 상태를 거친다.
+    - time-wait은 길어질 수 있다.
+        - Time-wait은 필요하다. 그러나 실 서비스중인 서버의 경이 Time-wait이 문제가 될 수 있다. 그러한 경우에는 Time-wait 상태에 있는 Port의 할당이 가능하도록 코드를 수정해야 한다.
+- Nagle 알고리즘
+    - Nagle 알고리즘은 앞서 전송한 데이터에 대한 ACK 메시지를 받아야만, 다음 데이터를 전송하는 알고리즘이다!
+
+- 프로세스
+    - 간단하게는 실행 중인 프로그램을 뜻한다.
+    - 실행중인 프로그램에 관련된 메모리, 리소스 등을 총칭하는 의미이다.
+    - 멀티프로세스 운영체제는 둘 이상의 프로세스를 동시에 생성 가능하다.
+
+- 좀비 프로세스란?
+    - 실행이 완료되었음에도 불구하고, 소멸되지 않은 프로세스
+    - 프로세스도 main 함수가 반환되면 소멸되어야 한다.
+    - 소멸되지 않았다는 것은 프로세스가 사용한 리소스가 메모리 공간에 여전히 존재한다는 의미이다.
+
+- 좀비 프로세스의 생성원인
+    - 자식프로세스가 종료되면서 반환하는 상태 값이 부모 프로세스에게 전달되지 않으면 해당 프로세스는 소멸되지 않고 좀비가 된다.
+
+
+## 4일차
+- 좀비프로세스(계속)
+    

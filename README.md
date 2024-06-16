@@ -293,6 +293,45 @@ int setsockopt(int sock,. int level, int optname, const void *optval, socklen_t 
     - 따라서 운영체제가 별도의 메모리 공간을 마려해 줘야 프로세스간 통신이 가능하다.
 
 - 파이프 기반의 프로세스간 통신
+```c
+include <unistd.h>
 
+int pipe(int filedes[2]);
+```
+
+- 멀티 프로세스 서버의 단점
+    - 프로세스의 빈번한 생성은 성능의 전하로 이어진다.
+    - 멀트 프로세스의 흐름을 고려해서 구현해야하기 때문에 구현이 쉽지 않다.
+    - 프로세스간 통신이 필요한 상황에서는 서버의 구현이 더 복잡해진다.
+- 멀티 프로세스 서버의 대안
+    - 하나의 프로세스가 다수의 클라이언트에거 서비스를 할 수 있도록 한다.
+    - 이를 위해서는 하나의 프로세스가 여러 개의 소켓을 핸들링 할 수 있는 방법이 존재 해야한다.
+    - 이것이 **IO 멀티플랙싱**이다.
+
+- select 함수의 기능과 호출순서
+    1. Step 0ne - 관찰의 댕상을 묶고, 관찰의 유형을 지정한다.
+        - 파일티스크리터의 설정
+        - 검사의 범위 지정
+        - 타임아웃의 설정
+    2. Step two - 관찰 대상의 변화를 묻는다.
+        - select 함수의 호출
+    3. Step Three - 물음에 대한 대답을 듣는다.
+        - 호출결과 확인
+
+- fd_set 형 변수의 컨트롤 함수
+    - FD_ZERO(fd_set * fdset) - 인자로 전달된 주소의 fd_set형 변수의 모든 비트를 0으로 초기화 한다.
+    - FD_SET(int fd, fd_set *fdset) - 매개변수 fdset으로 전달된 주소의 변수에 매개변수 fd로 전달된 파일 디스크립터 정보를 등록한다.
+    - FD_CLR(int fd, fd_set *fdset) - 매개변수로 fdset으로 전달된 주소의 변수에서 배개변수 fd로 전달된 파일 디스크립터 정보를 삭제한다.
+    - FD_ISSET(int fd, fd_set *fdset) - 매개변수 fdset으로 전달된 주소의 변수에 매개변수 fd로 전달된 파일 디스크립터의 정보가 있으면 양수를 변환한다.
+
+```c
+#include <sys/select.h>
+#include <sys/time.h>
+
+int select(
+    int maxfd, fd_set *readset, fd_set *writeset, fd_set *exceptset, const struct timeva * timeout);
+)
+```
+    
 
 ## 5일차(2024-06-17)

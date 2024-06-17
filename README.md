@@ -335,3 +335,57 @@ int select(
     
 
 ## 5일차(2024-06-17)
+- send 함수
+```c
+#include <sys/socket.h>
+
+ssize_t send(int sockfd, const void * buf, size_t nbytes, int flags);
+```
+
+- recv 함수
+```c
+#include <sys/socket.h>
+
+ssize_t recv(int sockfd, void * buf, size_t nbytes, int flags);
+```
+- MSG_OOB - 긴급 메시지의 전송
+
+- writev 함수 - 둘 이상의 영역에 나뉘어 저장된 데이터를 묶어서 한번의 함수호출을 통해서 보낼 수 있다.
+```c
+#include <sys/uio.h>
+
+ssize_t writev(int filedes, const struct iovec * iov, int iovcnt);
+```
+
+- readv 함수 - 단 한번의 함수호출을 통해서 입력되는 데이터를 둘 이상의 영역에 나눠서 저장이 가능하다.
+```c
+#include <sys/uio.h>
+
+ssize_t readv(int filedes, const struct iovec * iov, int iovcnt);
+```
+
+- 표준 입출력 함수의 장점
+    - 표준 입출력 함수는 이식성이 좋다.
+    - 표준 입출력 함수는 버퍼링을 통한 성능의 향상에 도움이 된다.
+- 표준 입출력 함수의 사용에 있어서 불편사항
+    - 양방향 통신이 쉽지 않다.
+    - 상황에 따라서 fflush함수의 호출이 빈번히 등장할 수 있다.
+    - 파일 디스크립터를 FILE 구조체의 포인터로 변환해야 한다.
+- fdopen함수
+```c
+#include <stdio.h>
+FILE * fdopen(int fildes, const char *mode)
+```
+- fileno 함수
+```c
+#include <stdio.h>
+int fileno(FILE * stream);
+```
+
+- 파일 디스크립터의 복사
+```c
+#include <unistd.h>
+
+int dup(int fildes);
+int dup2(int fildes, int fildes2);
+```

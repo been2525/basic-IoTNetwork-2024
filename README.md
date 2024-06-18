@@ -389,3 +389,6 @@ int fileno(FILE * stream);
 int dup(int fildes);
 int dup2(int fildes, int fildes2);
 ```
+
+## 6일차 (2024-06-18)
+
